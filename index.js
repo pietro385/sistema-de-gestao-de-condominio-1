@@ -3,153 +3,121 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const app = express();
-//oi
 
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const connection = mysql.createConnection ({
+const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'root',
-    database: 'controleEstoque'
+    database: 'gestao_de_condominio'
 });
 
-connection.connect (function(err) {
-    if(err) {
-        console.error("Error: ", err);
+connection.connect(function(err) {
+    if (err) {
+        console.error("Erro: ", err);
         return;
+    } else {
+        console.log("Conexão ok");
     }
-    else {
-        console.log("Ok Connection");
-    }
 });
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+app.post('/blocos', (req, res) => {
+    const nome = req.body.nome;
+    const quantidade = req.body.quantidade_apartamentos;
+    connection.query(
+        'INSERT INTO blocos (nome, quantidade_apartamentos) VALUES (?, ?)',
+        [nome, quantidade],
+        (err, result) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send('Erro ao cadastrar bloco');
+            }
+            res.status(200).send('Bloco cadastrado com sucesso');
+        }
+    );
 });
 
-app.get('/cadastro', (req, res) => {
-    res.sendFile(__dirname + '/cadastro.html');
+app.get('/blocos', (req, res) => {
+    connection.query('SELECT id, nome, quantidade_apartamentos FROM blocos', (err, results) => {
+        if (err) return res.status(500).json({ erro: 'Erro ao buscar blocos' });
+        res.json(results);
+    });
+});
+app.post('/apartamentos', (req, res) => {
+    const { id_bloco, numero, vagas, area } = req.body;
+    connection.query(
+        'INSERT INTO apartamentos (id_bloco, numero, vagas, area) VALUES (?, ?, ?, ?)',
+        [id_bloco, numero, vagas, area],
+        (err, result) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send('Erro ao cadastrar apartamento');
+            }
+            res.status(200).send('Apartamento cadastrado com sucesso');
+        }
+    );
 });
 
-app.post('/cadastrar', (req, res) => {
-    const produto = req.body.nome;
-    const quantidade = req.body.quantidade;
-    const preco = req.body.preco;
-
-    const insert = 
-        'INSERT INTO produtos (produto, quantidade, preco) VALUES (?, ?, ?)';
-    connection.query(insert, [produto, quantidade, preco], (err, results) => {
-        if(err){
-            console.error("Error to insert product: ", err);
-            res.status(500).send("Error to register the product");
-            return;
-        }
-        else {
-            console.log("Product was insert with success!");
-            res.redirect('/');
-        }
-    })
-});
-
-app.get('/relatorio', (req, res) => {
-    const select = 'SELECT * FROM produtos;';
-
-    connection.query(select, (err, rows) => {
-        if(err) {
-            console.error("Erro ao listar produtos: ", err);
-            res.status(500).send('Erro ao listar produtos');
-            return;
-        }
-        else {
-            console.log("Produtos listados com sucesso");
-            res.send(`
-                <h1>Lista de Produtos</h1>
-                <table border="1">
-                    <tr>
-                        <th>ID</th>
-                        <th>Produto</th>
-                        <th>Quantidade</th>
-                        <th>Preçoo</th>
-                        <th>Ações</th>
-                    <tr>
-                    ${rows.map(row => `
-                        <tr>
-                            <td>${row.id}</td>
-                            <td>${row.produto}</td>
-                            <td>${row.quantidade}</td>
-                            <td>${row.preco}</td>
-                            <td><a href="/deletar/${row.id}">Deletar</a></td>
-                        </tr>    
-                    `).join('')}
-                </table>    
-                <a href="/">Voltar</a>
-            `)
-        }
+// Rota para listar apartamentos
+app.get('/apartamentos', (req, res) => {
+    connection.query('SELECT * FROM apartamentos', (err, results) => {
+        if (err) return res.status(500).json({ erro: 'Erro ao buscar apartamentos' });
+        res.json(results);
     });
 });
 
-app.get('/deletar/:id', (req, res) => {
-    const id = req.params.id;
-    const deletar = 'DELETE FROM produtos WHERE id = ?';
-    connection.query(deletar, [id], (err, results) => {
-        if(err) {
-            console.error("Erro ao deletar produto: ", err);
-            res.status(500).send("Erro ao deletar produto");
-            return;
+app.post('/manutencoes', (req, res) => {
+    const { descricao, data, custo } = req.body;
+    connection.query(
+        'INSERT INTO manutencoes (descricao, data, custo) VALUES (?, ?, ?)',
+        [descricao, data, custo],
+        (err, result) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send('Erro ao cadastrar manutenção');
+            }
+            res.status(200).send('Manutenção cadastrada com sucesso');
         }
-        else {
-            console.log("Produto deletado com sucesso");
-            res.redirect('/relatorio');
-        }
+    );
+});
+
+// Rota para listar manutenções
+app.get('/manutencoes', (req, res) => {
+    connection.query('SELECT * FROM manutencoes', (err, results) => {
+        if (err) return res.status(500).json({ erro: 'Erro ao buscar manutenções' });
+        res.json(results);
     });
 });
 
-app.get('/atualizar/:id', (req, res) => {
-    const id = req.params.id;
-    const select = 'SELECT * FROM produtor WHERE id = ?';
-
-    connection.query(select, [id], (err, rows) => {
-        if (!err && rows.length > 0)
-        {
-            const produto = rows[0];
-            res.send(
-                `
-                <html>
-                    <head>
-                        <title>Atualizar Produto</title>
-                    </head>
-                    <body>
-                        <h1>Atualizar Produto</h1>
-                        <form action="/atualizar/${produto.id}" method="POST">
-                            <label for="nome">Nome:</label>
-                            <input type="text" id="nome" name="nome=" 
-                            value ="${produto.produto}" required><br><br>
-
-                            <label for="quantidade">Quantidade:</label>
-                            <input type="number" id="quantidade" name="quantidade"
-                            value="${produto.quantidade}" required><br><br>
-
-                            <label for="preco">Preço:</label>
-                            <input type="number" step="0.01" id="preco" name="preco"
-                            value="${produto.preco}" required><br><br>
-
-                            <input type="submite" value="Atualizar">
-                        </form>
-
-                        <a href="/relatorio">Voltar</a>
-                    </body>
-                </html>
-                `
-            );
-        } 
-        else {
-            res.status(404).send("Produto não encontrado");
+app.post('/moradores', (req, res) => {
+    const { cpf, nome, telefone, email, id_apartamento } = req.body;
+    connection.query(
+        'INSERT INTO moradores (cpf, nome, telefone, email, id_apartamento) VALUES (?, ?, ?, ?, ?)',
+        [cpf, nome, telefone, email, id_apartamento],
+        (err, result) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send('Erro ao cadastrar morador');
+            }
+            res.status(200).send('Morador cadastrado com sucesso');
         }
-    });
+    );
 });
 
-app.listen(3000, () => {
-    console.log('Server running http://localhost:3000');
+// POST para cadastrar pagamento
+app.post('/pagamentos', (req, res) => {
+    const { id_morador, valor, data_pagamento, descricao } = req.body;
+    connection.query(
+        'INSERT INTO pagamentos (id_morador, valor, data_pagamento, descricao) VALUES (?, ?, ?, ?)',
+        [id_morador, valor, data_pagamento, descricao],
+        (err, result) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send('Erro ao cadastrar pagamento');
+            }
+            res.status(200).send('Pagamento cadastrado com sucesso');
+        }
+    );
 });
