@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrar Pagamento</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <h1>Registrar Pagamento</h1>
+  <form id="form">
+    <label>Apartamento (ID):</label>
+    <input id="apt" type="number" required>
+
+    <label>Mês/Ano:</label>
+    <select id="ref" required></select>
+
+    <label>Data Pagamento:</label>
+    <input id="dt" type="date" required>
+
+    <button type="submit">Pagar</button>
+    <button type="button" onclick="history.back()">Voltar</button>
+  </form>
+  <script src="../js/pagamentos.js"></script>
+</body>
+</html>

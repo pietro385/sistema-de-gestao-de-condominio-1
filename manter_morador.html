@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Manter Morador</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <h1 id="titulo"></h1>
+  <form id="form">
+    <label>CPF:</label><input id="cpf" required>
+    <label>Nome:</label><input id="nome" required>
+    <label>Telefone:</label><input id="tel">
+    <label>Apartamento:</label><select id="apart_id" required></select>
+    <label>Responsável? </label>
+    <select id="resp"><option>Sim</option><option>Não</option></select>
+    <label>Possui veículo? </label>
+    <select id="vei"><option>Sim</option><option>Não</option></select>
+    <label>Vagas (se veículo):</label>
+    <input id="vag" type="number" min="0">
+    <button type="submit" id="btn-salvar"></button>
+    <button type="button" onclick="history.back()">Voltar</button>
+  </form>
+  <script src="../js/manter_morador.js"></script>
+</body>
+</html>

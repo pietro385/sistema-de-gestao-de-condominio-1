@@ -1,0 +1,75 @@
+<!-- Salvar como frontend/html/index.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestão de Condomínios</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+    }
+    nav {
+      background: #34495e;
+      padding: 10px 0;
+    }
+    nav .container {
+      display: flex;
+      gap: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    nav a {
+      color: #ecf0f1;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      display: block;
+    }
+    nav a.active,
+    nav a:hover {
+      background: #2c3a47;
+    }
+    #view {
+      width: 100%;
+      height: calc(100vh - 52px);
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="container">
+      <a href="blocos.html"       class="nav-link">Blocos</a>
+      <a href="apartamentos.html" class="nav-link">Apartamentos</a>
+      <a href="moradores.html"    class="nav-link">Moradores</a>
+      <a href="pagamentos.html"   class="nav-link">Pagamentos</a>
+      <!-- Removi o link para tipos_manutencao.html -->
+      <a href="manutencoes.html"  class="nav-link">Manutenções</a>
+    </div>
+  </nav>
+
+  <iframe id="view" src="blocos.html"></iframe>
+
+  <script>
+    const links = document.querySelectorAll('nav .nav-link');
+    const frame = document.getElementById('view');
+
+    function setActive(el) {
+      links.forEach(a => a.classList.toggle('active', a === el));
+    }
+
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        frame.src = link.getAttribute('href');
+        setActive(link);
+      });
+    });
+
+    setActive(links[0]);
+  </script>
+</body>
+</html>
+

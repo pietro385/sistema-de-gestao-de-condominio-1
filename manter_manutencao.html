@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrar Manutenção</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <h1>Registrar Manutenção</h1>
+  <form id="form">
+    <label>Tipo de manutenção:</label>
+    <select id="tipo" required></select>
+
+    <label>Data:</label>
+    <input id="dt" type="date" required>
+
+    <label>Local:</label>
+    <input id="local" required>
+
+    <button type="submit">Salvar</button>
+    <button type="button" onclick="history.back()">Voltar</button>
+  </form>
+  <script>
+    const apiTipo = '/api/tipos_manutencao';
+    const apiMan = '/api/manutencoes';
+    const sel = document.getElementById('tipo');
+
+    fetch(apiTipo)
+      .then(r => r.json())
+      .then(ts => {
+        ts.forEach(t => {
+          const o = document.createElement('option');
+          o.value = t.id;
+          o.textContent = t.descricao;
+          sel.appendChild(o);
+        });
+      });
+
+    document.getElementById('form').onsubmit = async e => {
+      e.preventDefault();
+      const payload = {
+        tipo_id: +sel.value,
+        data: document.getElementById('dt').value,
+        local: document.getElementById('local').value.trim()
+      };
+      const resp = await fetch(apiMan, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (resp.ok) {
+        alert('Manutenção registrada com sucesso');
+        history.back();
+      } else {
+        const err = await resp.json();
+        alert(err.error || 'Erro');
+      }
+    };
+  </script>
+</body>
+</html>

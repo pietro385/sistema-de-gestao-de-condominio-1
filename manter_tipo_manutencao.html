@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Manter Tipo de Manutenção</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <h1>Novo Tipo de Manutenção</h1>
+  <form id="form">
+    <label>Descrição:</label>
+    <input id="desc" required>
+    <button type="submit">Cadastrar</button>
+    <button type="button" onclick="history.back()">Voltar</button>
+  </form>
+  <script>
+    const API = '/api/tipos_manutencao';
+    document.getElementById('form').onsubmit = async e => {
+      e.preventDefault();
+      const resp = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ descricao: document.getElementById('desc').value.trim() })
+      });
+      if (resp.ok) {
+        alert('Tipo cadastrado com sucesso');
+        history.back();
+      } else {
+        const err = await resp.json();
+        alert(err.error);
+      }
+    };
+  </script>
+</body>
+</html>
