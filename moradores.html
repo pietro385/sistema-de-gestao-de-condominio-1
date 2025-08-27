@@ -3,20 +3,718 @@
 <head>
   <meta charset="UTF-8">
   <title>Moradores</title>
-  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background: #f5f6fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      color: #2d3436;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      position: relative;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #0984e3;
+    }
+    h1 {
+      color: #2d3436;
+      margin: 0;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: #636e72;
+      margin-top: 5px;
+    }
+    .form-container {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+    }
+    #form-morador {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 0;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #2d3436;
+    }
+    form input, form select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #dfe6e9;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+    form button {
+      background: #0984e3;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-weight: 600;
+      margin-top: 25px;
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: 200px;
+    }
+    form button:hover {
+      background: #0770c5;
+    }
+    .search-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    #filtro {
+      width: 100%;
+      padding: 12px 12px 12px 40px;
+      border-radius: 6px;
+      border: 1px solid #dfe6e9;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #636e72;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fafbfc;
+      margin-top: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+    th, td {
+      padding: 14px 12px;
+      border-bottom: 1px solid #dfe6e9;
+      text-align: left;
+    }
+    th {
+      background: #0984e3;
+      color: #fff;
+      font-weight: 600;
+      text-align: center;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:nth-child(even) {
+      background-color: #f1f4f7;
+    }
+    tr:hover {
+      background-color: #e8f4fc;
+    }
+    .voltar {
+      display: block;
+      margin: 30px auto 0 auto;
+      width: fit-content;
+      background: #636e72;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.2s;
+      text-align: center;
+      font-weight: 600;
+    }
+    .voltar:hover {
+      background: #4d575a;
+    }
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .success {
+      background-color: #00b894;
+    }
+    .error {
+      background-color: #d63031;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+    .btn-edit, .btn-delete, .btn-view {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .btn-edit {
+      background: #0984e3;
+      color: white;
+    }
+    .btn-edit:hover {
+      background: #0770c5;
+    }
+    .btn-delete {
+      background: #d63031;
+      color: white;
+    }
+    .btn-delete:hover {
+      background: #b71c1c;
+    }
+    .btn-view {
+      background: #00b894;
+      color: white;
+    }
+    .btn-view:hover {
+      background: #00a382;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      width: 500px;
+      max-width: 90%;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #2d3436;
+      margin: 0;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #636e72;
+    }
+    .modal-body {
+      margin-bottom: 20px;
+    }
+    .modal-field {
+      margin-bottom: 15px;
+    }
+    .modal-field label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .modal-field span {
+      display: block;
+      padding: 8px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      min-height: 20px;
+    }
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+        margin: 15px auto;
+      }
+      #form-morador {
+        grid-template-columns: 1fr;
+      }
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Moradores</h1>
-  <button onclick="location.href='manter_morador.html?mode=novo'">
-    Novo Morador
-  </button>
-  <input id="filtro" placeholder="Pesquisar CPF ou nome...">
-  <table>
-    <thead>
-      <tr><th>CPF</th><th>Nome</th><th>Apto</th><th>Bloco</th><th>Ações</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <script src="../js/moradores.js"></script>
+  <div class="container">
+    <div class="header">
+      <h1>Cadastro de Moradores</h1>
+      <p class="subtitle">Gerencie os moradores do condomínio</p>
+    </div>
+    
+    <div class="form-container">
+      <form id="form-morador">
+        <div class="form-group">
+          <label for="cpf">CPF</label>
+          <input type="text" id="cpf" placeholder="Ex: 123.456.789-00" required>
+        </div>
+        <div class="form-group">
+          <label for="nome">Nome Completo</label>
+          <input type="text" id="nome" placeholder="Ex: João Silva" required>
+        </div>
+        <div class="form-group">
+          <label for="telefone">Telefone</label>
+          <input type="text" id="telefone" placeholder="Ex: (47) 99999-9999" required>
+        </div>
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" placeholder="Ex: joao@email.com">
+        </div>
+        <div class="form-group">
+          <label for="bloco">Bloco</label>
+          <select id="bloco" required>
+            <option value="">Selecione um bloco</option>
+            <!-- Opções serão preenchidas via JavaScript -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="apartamento">Apartamento</label>
+          <select id="apartamento" required>
+            <option value="">Selecione um apartamento</option>
+            <!-- Opções serão preenchidas via JavaScript -->
+          </select>
+        </div>
+        <button type="submit" id="btnCadastrar">Novo Morador</button>
+      </form>
+    </div>
+    
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" id="filtro" placeholder="Pesquisar morador por CPF ou nome...">
+    </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th width="15%">CPF</th>
+          <th width="25%">Nome</th>
+          <th width="15%">Telefone</th>
+          <th width="15%">Bloco</th>
+          <th width="10%">Apartamento</th>
+          <th width="20%">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="lista-moradores">
+        <!-- Os dados serão preenchidos via JavaScript -->
+      </tbody>
+    </table>
+    
+    <a href="index.html" class="voltar">Voltar ao menu</a>
+  </div>
+  
+  <!-- Modal para visualização de morador -->
+  <div class="modal" id="viewModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Detalhes do Morador</h2>
+        <button class="close-btn" onclick="fecharModal('viewModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-field">
+          <label>CPF:</label>
+          <span id="view-cpf"></span>
+        </div>
+        <div class="modal-field">
+          <label>Nome:</label>
+          <span id="view-nome"></span>
+        </div>
+        <div class="modal-field">
+          <label>Telefone:</label>
+          <span id="view-telefone"></span>
+        </div>
+        <div class="modal-field">
+          <label>E-mail:</label>
+          <span id="view-email"></span>
+        </div>
+        <div class="modal-field">
+          <label>Bloco:</label>
+          <span id="view-bloco"></span>
+        </div>
+        <div class="modal-field">
+          <label>Apartamento:</label>
+          <span id="view-apartamento"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="notification" id="notification"></div>
+
+  <script>
+    // Elementos do DOM
+    const formMorador = document.getElementById('form-morador');
+    const listaMoradores = document.getElementById('lista-moradores');
+    const filtro = document.getElementById('filtro');
+    const notification = document.getElementById('notification');
+    const selectBloco = document.getElementById('bloco');
+    const selectApartamento = document.getElementById('apartamento');
+    
+    // Variável para controlar se estamos editando
+    let editandoCpf = null;
+    
+    // Função para exibir notificação
+    function showNotification(message, type) {
+      notification.textContent = message;
+      notification.className = 'notification ' + type;
+      notification.style.display = 'block';
+      
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+    
+    // Função para formatar CPF
+    function formatarCPF(cpf) {
+      if (!cpf) return '';
+      cpf = cpf.replace(/\D/g, '');
+      return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    }
+    
+    // Função para formatar telefone
+    function formatarTelefone(telefone) {
+      if (!telefone) return '';
+      telefone = telefone.replace(/\D/g, '');
+      if (telefone.length === 11) {
+        return telefone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+      }
+      return telefone;
+    }
+    
+    // Máscaras para os campos
+    document.getElementById('cpf').addEventListener('input', function(e) {
+      e.target.value = formatarCPF(e.target.value);
+    });
+    
+    document.getElementById('telefone').addEventListener('input', function(e) {
+      e.target.value = formatarTelefone(e.target.value);
+    });
+    
+    // Função para preencher o select de blocos
+    async function preencherSelectBlocos() {
+      try {
+        const response = await fetch('/blocos');
+        if (!response.ok) {
+          throw new Error('Erro ao carregar blocos');
+        }
+        
+        const blocos = await response.json();
+        
+        // Limpar select
+        selectBloco.innerHTML = '<option value="">Selecione um bloco</option>';
+        
+        // Adicionar opções
+        blocos.forEach(bloco => {
+          const option = document.createElement('option');
+          option.value = bloco.id;
+          option.textContent = bloco.nome;
+          selectBloco.appendChild(option);
+        });
+      } catch (error) {
+        showNotification('Erro ao carregar blocos.', 'error');
+        console.error('Erro:', error);
+      }
+    }
+    
+    // Função para preencher o select de apartamentos baseado no bloco selecionado
+    async function preencherSelectApartamentos(idBloco) {
+      try {
+        const response = await fetch('/apartamentos');
+        if (!response.ok) {
+          throw new Error('Erro ao carregar apartamentos');
+        }
+        
+        const apartamentos = await response.json();
+        
+        // Limpar select
+        selectApartamento.innerHTML = '<option value="">Selecione um apartamento</option>';
+        
+        // Filtrar apartamentos pelo bloco selecionado e adicionar opções
+        const apartamentosFiltrados = apartamentos.filter(ap => ap.id_bloco == idBloco);
+        
+        apartamentosFiltrados.forEach(apartamento => {
+          const option = document.createElement('option');
+          option.value = apartamento.id;
+          option.textContent = apartamento.numero;
+          selectApartamento.appendChild(option);
+        });
+      } catch (error) {
+        showNotification('Erro ao carregar apartamentos.', 'error');
+        console.error('Erro:', error);
+      }
+    }
+    
+    // Event listener para quando o bloco for alterado
+    selectBloco.addEventListener('change', function() {
+      if (this.value) {
+        preencherSelectApartamentos(this.value);
+      } else {
+        selectApartamento.innerHTML = '<option value="">Selecione um apartamento</option>';
+      }
+    });
+    
+    // Função para renderizar a tabela de moradores
+    async function renderMoradores() {
+      const termo = filtro.value.trim().toLowerCase();
+      
+      try {
+        const response = await fetch('/moradores');
+        if (!response.ok) {
+          throw new Error('Erro ao carregar moradores');
+        }
+        
+        const moradores = await response.json();
+        
+        // Filtrar moradores com base no termo de pesquisa
+        const moradoresFiltrados = moradores.filter(morador => 
+          morador.cpf.toLowerCase().includes(termo) ||
+          morador.nome.toLowerCase().includes(termo)
+        );
+        
+        // Limpar a tabela
+        listaMoradores.innerHTML = '';
+        
+        // Preencher a tabela com os moradores
+        moradoresFiltrados.forEach(morador => {
+          const tr = document.createElement('tr');
+          
+          tr.innerHTML = `
+            <td style="text-align: center;">${formatarCPF(morador.cpf)}</td>
+            <td>${morador.nome}</td>
+            <td style="text-align: center;">${formatarTelefone(morador.telefone)}</td>
+            <td style="text-align: center;">${morador.bloco_nome || 'N/A'}</td>
+            <td style="text-align: center;">${morador.apartamento_numero || 'N/A'}</td>
+            <td class="action-buttons">
+              <button class="btn-view" onclick="visualizarMorador('${morador.cpf}')">
+                <i class="fas fa-eye"></i> Ver
+              </button>
+              <button class="btn-edit" onclick="editarMorador('${morador.cpf}')">
+                <i class="fas fa-edit"></i> Editar
+              </button>
+              <button class="btn-delete" onclick="excluirMorador('${morador.cpf}')">
+                <i class="fas fa-trash"></i> Excluir
+              </button>
+            </td>
+          `;
+          
+          listaMoradores.appendChild(tr);
+        });
+        
+        // Se não houver resultados, exibir mensagem
+        if (moradoresFiltrados.length === 0) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td colspan="6" style="text-align: center; padding: 20px;">
+              Nenhum morador encontrado.
+            </td>
+          `;
+          listaMoradores.appendChild(tr);
+        }
+      } catch (error) {
+        showNotification('Erro ao carregar moradores.', 'error');
+        console.error('Erro:', error);
+      }
+    }
+    
+    // Função para visualizar um morador
+    async function visualizarMorador(cpf) {
+      try {
+        const response = await fetch(`/moradores/${cpf}`);
+        if (!response.ok) {
+          throw new Error('Erro ao carregar dados do morador');
+        }
+        
+        const morador = await response.json();
+        
+        document.getElementById('view-cpf').textContent = formatarCPF(morador.cpf);
+        document.getElementById('view-nome').textContent = morador.nome;
+        document.getElementById('view-telefone').textContent = formatarTelefone(morador.telefone);
+        document.getElementById('view-email').textContent = morador.email || 'N/A';
+        document.getElementById('view-bloco').textContent = morador.bloco_nome || 'N/A';
+        document.getElementById('view-apartamento').textContent = morador.apartamento_numero || 'N/A';
+        
+        document.getElementById('viewModal').style.display = 'flex';
+      } catch (error) {
+        showNotification('Erro ao carregar dados do morador.', 'error');
+        console.error('Erro:', error);
+      }
+    }
+    
+    // Função para fechar modal
+    function fecharModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+    
+    // Função para adicionar/editar um morador
+    async function salvarMorador(event) {
+      event.preventDefault();
+      
+      const cpfInput = document.getElementById('cpf');
+      const nomeInput = document.getElementById('nome');
+      const telefoneInput = document.getElementById('telefone');
+      const emailInput = document.getElementById('email');
+      const blocoSelect = document.getElementById('bloco');
+      const apartamentoSelect = document.getElementById('apartamento');
+      
+      // Remover formatação para salvar no banco
+      const cpf = cpfInput.value.replace(/\D/g, '');
+      const nome = nomeInput.value.trim();
+      const telefone = telefoneInput.value.replace(/\D/g, '');
+      const email = emailInput.value.trim();
+      const id_bloco = parseInt(blocoSelect.value);
+      const id_apartamento = parseInt(apartamentoSelect.value);
+      
+      if (!cpf || cpf.length !== 11 || !nome || !telefone || !id_bloco || !id_apartamento) {
+        showNotification('Preencha todos os campos obrigatórios corretamente!', 'error');
+        return;
+      }
+      
+      try {
+        const url = editandoCpf ? `/moradores/${editandoCpf}` : '/moradores';
+        const method = editandoCpf ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cpf, nome, telefone, email, id_apartamento })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Erro ao salvar morador');
+        }
+        
+        // Limpar o formulário
+        formMorador.reset();
+        editandoCpf = null;
+        document.getElementById('btnCadastrar').textContent = 'Novo Morador';
+        
+        // Atualizar a tabela
+        renderMoradores();
+        
+        // Exibir notificação de sucesso
+        const mensagem = editandoCpf ? 'Morador atualizado com sucesso!' : 'Morador cadastrado com sucesso!';
+        showNotification(mensagem, 'success');
+        
+      } catch (error) {
+        showNotification('Erro ao salvar morador. Tente novamente.', 'error');
+        console.error('Erro:', error);
+      }
+    }
+    
+    // Função para editar um morador
+    async function editarMorador(cpf) {
+      try {
+        const response = await fetch(`/moradores/${cpf}`);
+        if (!response.ok) {
+          throw new Error('Erro ao carregar dados do morador');
+        }
+        
+        const morador = await response.json();
+        
+        // Preencher o formulário com os dados do morador
+        document.getElementById('cpf').value = formatarCPF(morador.cpf);
+        document.getElementById('nome').value = morador.nome;
+        document.getElementById('telefone').value = formatarTelefone(morador.telefone);
+        document.getElementById('email').value = morador.email || '';
+        
+        // Carregar bloco e apartamento
+        await preencherSelectBlocos();
+        document.getElementById('bloco').value = morador.id_bloco;
+        await preencherSelectApartamentos(morador.id_bloco);
+        document.getElementById('apartamento').value = morador.id_apartamento;
+        
+        // Configurar modo de edição
+        editandoCpf = morador.cpf;
+        document.getElementById('btnCadastrar').textContent = 'Atualizar Morador';
+        document.getElementById('cpf').disabled = true; // Não permitir editar CPF
+        
+        showNotification('Preencha os dados e clique em Atualizar Morador para salvar', 'success');
+      } catch (error) {
+        showNotification('Erro ao carregar dados do morador.', 'error');
+        console.error('Erro:', error);
+      }
+    }
+    
+    // Função para excluir um morador
+    async function excluirMorador(cpf) {
+      if (confirm('Tem certeza que deseja excluir este morador?')) {
+        try {
+          const response = await fetch(`/moradores/${cpf}`, { 
+            method: 'DELETE' 
+          });
+          
+          if (!response.ok) {
+            throw new Error('Erro ao excluir morador');
+          }
+          
+          // Se estávamos editando este morador, cancelar a edição
+          if (editandoCpf === cpf) {
+            formMorador.reset();
+            editandoCpf = null;
+            document.getElementById('btnCadastrar').textContent = 'Novo Morador';
+            document.getElementById('cpf').disabled = false;
+          }
+          
+          // Atualizar a tabela
+          renderMoradores();
+          
+          showNotification('Morador excluído com sucesso!', 'success');
+        } catch (error) {
+          showNotification('Erro ao excluir morador. Tente novamente.', 'error');
+          console.error('Erro:', error);
+        }
+      }
+    }
+    
+    // Event Listeners
+    formMorador.addEventListener('submit', salvarMorador);
+    filtro.addEventListener('input', renderMoradores);
+    
+    // Fechar modal ao clicar fora dele
+    window.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal')) {
+        e.target.style.display = 'none';
+      }
+    });
+    
+    // Inicializar a página
+    preencherSelectBlocos();
+    renderMoradores();
+  </script>
 </body>
 </html>

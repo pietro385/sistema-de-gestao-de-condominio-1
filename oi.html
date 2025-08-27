@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Blocos</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: #f5f6fa;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px #0001;
+      padding: 32px 24px 24px 24px;
+    }
+    h1 {
+      color: #2d3436;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    form {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 18px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    form input, form button {
+      padding: 8px 10px;
+      border-radius: 5px;
+      border: 1px solid #dfe6e9;
+      font-size: 1em;
+    }
+    form button {
+      background: #0984e3;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    form button:hover {
+      background: #74b9ff;
+      color: #222;
+    }
+    #filtro {
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #dfe6e9;
+      font-size: 1em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fafbfc;
+      margin-top: 12px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #dfe6e9;
+      text-align: center;
+    }
+    th {
+      background: #0984e3;
+      color: #fff;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .voltar {
+      display: block;
+      margin: 30px auto 0 auto;
+      width: fit-content;
+      background: #636e72;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .voltar:hover {
+      background: #b2bec3;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cadastro de Blocos</h1>
+    <form id="form-bloco">
+      <input type="text" id="nomeBloco" placeholder="Nome do bloco" required>
+      <input type="number" id="quantidadeAptos" placeholder="Qtd. apartamentos" min="1" required>
+      <button type="submit" id="btnCadastrar">Novo Bloco</button>
+    </form>
+    <input type="text" id="filtro" placeholder="Pesquisar bloco...">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Qtd. Aptos</th>
+        </tr>
+      </thead>
+      <tbody id="lista-blocos"></tbody>
+    </table>
+    <a href="index.html" class="voltar">Voltar ao menu</a>
+  </div>
+  <script>
+    async function carregarBlocos() {
+      const resp = await fetch('/blocos');
+      const blocos = await resp.json();
+      const filtro = document.getElementById('filtro').value.trim().toLowerCase();
+      const lista = document.getElementById('lista-blocos');
+      lista.innerHTML = '';
+      blocos.forEach((bloco) => {
+        if (filtro && !bloco.nome.toLowerCase().includes(filtro)) return;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${bloco.id}</td>
+          <td>${bloco.nome}</td>
+          <td>${bloco.quantidade_apartamentos}</td>
+        `;
+        lista.appendChild(tr);
+      });
+    }
+
+    document.getElementById('form-bloco').onsubmit = async function(e) {
+      e.preventDefault();
+      const nome = document.getElementById('nomeBloco').value.trim();
+      const quantidade = document.getElementById('quantidadeAptos').value;
+      if (!nome || !quantidade) return;
+      await fetch('/blocos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, quantidade_apartamentos: quantidade })
+      });
+      this.reset();
+      carregarBlocos();
+    };
+
+    document.getElementById('filtro').oninput = carregarBlocos;
+
+    carregarBlocos();
+  </script>
+</body>
+</html>
