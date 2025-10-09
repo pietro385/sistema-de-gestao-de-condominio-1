@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Apartamentos</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background: #f5f6fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      color: #2d3436;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      position: relative;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #0984e3;
+    }
+    h1 {
+      color: #2d3436;
+      margin: 0;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: #636e72;
+      margin-top: 5px;
+    }
+    .form-container {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+    }
+    #form-apartamento {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 0;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #2d3436;
+    }
+    form input, form select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #dfe6e9;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+    form button {
+      background: #0984e3;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-weight: 600;
+      margin-top: 25px;
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: 200px;
+    }
+    form button:hover {
+      background: #0770c5;
+    }
+    .search-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    #filtro {
+      width: 100%;
+      padding: 12px 12px 12px 40px;
+      border-radius: 6px;
+      border: 1px solid #dfe6e9;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #636e72;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fafbfc;
+      margin-top: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+    th, td {
+      padding: 14px 12px;
+      border-bottom: 1px solid #dfe6e9;
+      text-align: left;
+    }
+    th {
+      background: #0984e3;
+      color: #fff;
+      font-weight: 600;
+      text-align: center;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:nth-child(even) {
+      background-color: #f1f4f7;
+    }
+    tr:hover {
+      background-color: #e8f4fc;
+    }
+    .voltar {
+      display: block;
+      margin: 30px auto 0 auto;
+      width: fit-content;
+      background: #636e72;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.2s;
+      text-align: center;
+      font-weight: 600;
+    }
+    .voltar:hover {
+      background: #4d575a;
+    }
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .success {
+      background-color: #00b894;
+    }
+    .error {
+      background-color: #d63031;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+    .btn-edit, .btn-delete, .btn-view {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .btn-edit {
+      background: #0984e3;
+      color: white;
+    }
+    .btn-edit:hover {
+      background: #0770c5;
+    }
+    .btn-delete {
+      background: #d63031;
+      color: white;
+    }
+    .btn-delete:hover {
+      background: #b71c1c;
+    }
+    .btn-view {
+      background: #00b894;
+      color: white;
+    }
+    .btn-view:hover {
+      background: #00a382;
+    }
+    .status-ocupado {
+      background-color: #ffeaa7;
+      color: #d35400;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .status-desocupado {
+      background-color: #55efc4;
+      color: #00b894;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .status-reforma {
+      background-color: #74b9ff;
+      color: #0984e3;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      width: 500px;
+      max-width: 90%;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #2d3436;
+      margin: 0;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #636e72;
+    }
+    .modal-body {
+      margin-bottom: 20px;
+    }
+    .modal-field {
+      margin-bottom: 15px;
+    }
+    .modal-field label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .modal-field span {
+      display: block;
+      padding: 8px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      min-height: 20px;
+    }
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+        margin: 15px auto;
+      }
+      #form-apartamento {
+        grid-template-columns: 1fr;
+      }
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Cadastro de Apartamentos</h1>
+      <p class="subtitle">Gerencie os apartamentos do condomínio</p>
+    </div>
+    
+    <div class="form-container">
+      <form id="form-apartamento">
+        <div class="form-group">
+          <label for="nome_bloco">Nome do Bloco</label>
+          <input type="text" id="nome_bloco" placeholder="Ex: Bloco A" required>
+        </div>
+        <div class="form-group">
+          <label for="numero">Número do Apartamento</label>
+          <input type="text" id="numero" placeholder="Ex: 101" required>
+        </div>
+        <div class="form-group">
+          <label for="vagas">Vagas de Garagem</label>
+          <input type="number" id="vagas" placeholder="Ex: 2" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="area">Área (m²)</label>
+          <input type="number" id="area" placeholder="Ex: 75.5" min="0" step="0.1" required>
+        </div>
+        <div class="form-group">
+          <label for="quartos">Quantidade de Quartos</label>
+          <input type="number" id="quartos" placeholder="Ex: 3" min="1">
+        </div>
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" required>
+            <option value="Desocupado">Desocupado</option>
+            <option value="Ocupado">Ocupado</option>
+            <option value="Em reforma">Em reforma</option>
+          </select>
+        </div>
+        <button type="submit" id="btnCadastrar">Cadastrar Apartamento</button>
+      </form>
+    </div>
+    
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" id="filtro" placeholder="Pesquisar apartamentos...">
+    </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th width="8%">ID</th>
+          <th width="15%">Bloco</th>
+          <th width="12%">Número</th>
+          <th width="10%">Vagas</th>
+          <th width="12%">Área (m²)</th>
+          <th width="12%">Quartos</th>
+          <th width="13%">Status</th>
+          <th width="18%">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="lista-apartamentos">
+        <!-- Os dados serão preenchidos via JavaScript -->
+      </tbody>
+    </table>
+    
+    <a href="index.html" class="voltar">Voltar ao menu</a>
+  </div>
+  
+  <!-- Modal para visualização de apartamento -->
+  <div class="modal" id="viewModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Detalhes do Apartamento</h2>
+        <button class="close-btn" onclick="fecharModal('viewModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-field">
+          <label>ID:</label>
+          <span id="view-id"></span>
+        </div>
+        <div class="modal-field">
+          <label>Bloco:</label>
+          <span id="view-bloco"></span>
+        </div>
+        <div class="modal-field">
+          <label>Número:</label>
+          <span id="view-numero"></span>
+        </div>
+        <div class="modal-field">
+          <label>Vagas de Garagem:</label>
+          <span id="view-vagas"></span>
+        </div>
+        <div class="modal-field">
+          <label>Área (m²):</label>
+          <span id="view-area"></span>
+        </div>
+        <div class="modal-field">
+          <label>Quantidade de Quartos:</label>
+          <span id="view-quartos"></span>
+        </div>
+        <div class="modal-field">
+          <label>Status:</label>
+          <span id="view-status"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="notification" id="notification"></div>
+
+  <script>
+    // Elementos do DOM
+    const formApartamento = document.getElementById('form-apartamento');
+    const listaApartamentos = document.getElementById('lista-apartamentos');
+    const filtro = document.getElementById('filtro');
+    const notification = document.getElementById('notification');
+    
+    // Arrays para armazenar dados em memória
+    let apartamentos = [];
+    let blocos = [];
+    
+    // Função para exibir notificação
+    function showNotification(message, type) {
+      notification.textContent = message;
+      notification.className = 'notification ' + type;
+      notification.style.display = 'block';
+      
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+    
+    // FUNÇÃO PRINCIPAL: Buscar blocos do backend
+    async function carregarBlocos() {
+      try {
+        const response = await fetch('/blocos');
+        if (!response.ok) {
+          throw new Error('Erro ao carregar blocos');
+        }
+        blocos = await response.json();
+        console.log('Blocos carregados:', blocos);
+      } catch (error) {
+        console.error('Erro ao carregar blocos:', error);
+        showNotification('Erro ao carregar lista de blocos', 'error');
+      }
+    }
+    
+    // FUNÇÃO PRINCIPAL: Buscar apartamentos do backend
+    async function carregarApartamentos() {
+      try {
+        const response = await fetch('/apartamentos');
+        if (!response.ok) {
+          throw new Error('Erro ao carregar apartamentos');
+        }
+        apartamentos = await response.json();
+        console.log('Apartamentos carregados:', apartamentos);
+        renderApartamentos();
+      } catch (error) {
+        console.error('Erro ao carregar apartamentos:', error);
+        showNotification('Erro ao carregar lista de apartamentos', 'error');
+      }
+    }
+    
+    // Função para obter classe CSS do status
+    function getStatusClass(status) {
+      switch(status) {
+        case 'Ocupado': return 'status-ocupado';
+        case 'Desocupado': return 'status-desocupado';
+        case 'Em reforma': return 'status-reforma';
+        default: return 'status-desocupado';
+      }
+    }
+    
+    // Função para renderizar a tabela de apartamentos
+    function renderApartamentos() {
+      const termo = filtro.value.trim().toLowerCase();
+      
+      // Filtrar apartamentos com base no termo de pesquisa
+      const apartamentosFiltrados = apartamentos.filter(ap => {
+        // Buscar o nome do bloco correspondente
+        const bloco = blocos.find(b => b.id === ap.id_bloco);
+        const nomeBloco = bloco ? bloco.nome : 'N/A';
+        
+        return (
+          ap.numero.toLowerCase().includes(termo) ||
+          ap.id.toString().includes(termo) ||
+          nomeBloco.toLowerCase().includes(termo) ||
+          ap.status.toLowerCase().includes(termo)
+        );
+      });
+      
+      // Limpar a tabela
+      listaApartamentos.innerHTML = '';
+      
+      // Preencher a tabela com os apartamentos
+      apartamentosFiltrados.forEach(apartamento => {
+        const tr = document.createElement('tr');
+        const bloco = blocos.find(b => b.id === apartamento.id_bloco);
+        const statusClass = getStatusClass(apartamento.status);
+        
+        tr.innerHTML = `
+          <td style="text-align: center;">${apartamento.id}</td>
+          <td>${bloco ? bloco.nome : 'N/A'}</td>
+          <td style="text-align: center;">${apartamento.numero}</td>
+          <td style="text-align: center;">${apartamento.vagas}</td>
+          <td style="text-align: center;">${apartamento.area}</td>
+          <td style="text-align: center;">${apartamento.quartos || 'N/A'}</td>
+          <td style="text-align: center;">
+            <span class="${statusClass}">${apartamento.status}</span>
+          </td>
+          <td class="action-buttons">
+            <button class="btn-view" onclick="visualizarApartamento(${apartamento.id})">
+              <i class="fas fa-eye"></i> Ver
+            </button>
+            <button class="btn-edit" onclick="editarApartamento(${apartamento.id})">
+              <i class="fas fa-edit"></i> Editar
+            </button>
+            <button class="btn-delete" onclick="excluirApartamento(${apartamento.id})">
+              <i class="fas fa-trash"></i> Excluir
+            </button>
+          </td>
+        `;
+        
+        listaApartamentos.appendChild(tr);
+      });
+      
+      // Se não houver resultados, exibir mensagem
+      if (apartamentosFiltrados.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td colspan="8" style="text-align: center; padding: 20px;">
+            Nenhum apartamento encontrado.
+          </td>
+        `;
+        listaApartamentos.appendChild(tr);
+      }
+    }
+    
+    // Função para visualizar um apartamento
+    function visualizarApartamento(id) {
+      const apartamento = apartamentos.find(ap => ap.id === id);
+      if (apartamento) {
+        const bloco = blocos.find(b => b.id === apartamento.id_bloco);
+        
+        document.getElementById('view-id').textContent = apartamento.id;
+        document.getElementById('view-bloco').textContent = bloco ? bloco.nome : 'N/A';
+        document.getElementById('view-numero').textContent = apartamento.numero;
+        document.getElementById('view-vagas').textContent = apartamento.vagas;
+        document.getElementById('view-area').textContent = apartamento.area;
+        document.getElementById('view-quartos').textContent = apartamento.quartos || 'N/A';
+        document.getElementById('view-status').textContent = apartamento.status;
+        
+        document.getElementById('viewModal').style.display = 'flex';
+      }
+    }
+    
+    // Função para fechar modal
+    function fecharModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+    
+    // Função para encontrar bloco pelo nome
+    async function encontrarBloco(nomeBloco) {
+      // Buscar o bloco pelo nome
+      const blocoExistente = blocos.find(b => b.nome.toLowerCase() === nomeBloco.toLowerCase());
+      
+      if (blocoExistente) {
+        return blocoExistente.id;
+      }
+      
+      return null;
+    }
+    
+    // Função para adicionar um novo apartamento
+    async function adicionarApartamento(event) {
+      event.preventDefault();
+      
+      const nomeBlocoInput = document.getElementById('nome_bloco');
+      const numeroInput = document.getElementById('numero');
+      const vagasInput = document.getElementById('vagas');
+      const areaInput = document.getElementById('area');
+      const quartosInput = document.getElementById('quartos');
+      const statusSelect = document.getElementById('status');
+      
+      const nomeBloco = nomeBlocoInput.value.trim();
+      const numero = numeroInput.value.trim();
+      const vagas = parseInt(vagasInput.value);
+      const area = parseFloat(areaInput.value);
+      const quartos = quartosInput.value ? parseInt(quartosInput.value) : null;
+      const status = statusSelect.value;
+      
+      // Validações básicas
+      if (!nomeBloco || !numero || isNaN(vagas) || vagas < 0 || isNaN(area) || area <= 0 || !status) {
+        showNotification('Preencha todos os campos obrigatórios corretamente!', 'error');
+        return;
+      }
+      
+      try {
+        // Primeiro, verificar se o bloco existe
+        const id_bloco = await encontrarBloco(nomeBloco);
+        
+        if (!id_bloco) {
+          showNotification('Bloco não encontrado! Cadastre o bloco "' + nomeBloco + '" primeiro.', 'error');
+          return;
+        }
+        
+        // Verificar se o apartamento já existe neste bloco
+        const apartamentoExistente = apartamentos.find(ap => 
+          ap.id_bloco === id_bloco && ap.numero === numero
+        );
+        
+        if (apartamentoExistente) {
+          showNotification('Já existe um apartamento com este número neste bloco!', 'error');
+          return;
+        }
+        
+        console.log('Enviando dados para o servidor:', {
+          id_bloco, 
+          numero, 
+          vagas, 
+          area,
+          quartos,
+          status
+        });
+        
+        // Enviar para o backend
+        const response = await fetch('/apartamentos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            id_bloco, 
+            numero, 
+            vagas, 
+            area,
+            quartos,
+            status
+          })
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || 'Erro ao cadastrar apartamento');
+        }
+        
+        // Limpar o formulário
+        formApartamento.reset();
+        
+        // Recarregar os dados do servidor
+        await carregarBlocos();
+        await carregarApartamentos();
+        
+        // Exibir notificação de sucesso
+        showNotification('Apartamento cadastrado com sucesso!', 'success');
+      } catch (error) {
+        showNotification('Erro ao cadastrar apartamento: ' + error.message, 'error');
+        console.error('Erro:', error);
+      }
+    }
+    
+    // Função para editar um apartamento
+    async function editarApartamento(id) {
+      const apartamento = apartamentos.find(ap => ap.id === id);
+      if (apartamento) {
+        const bloco = blocos.find(b => b.id === apartamento.id_bloco);
+        
+        // Preencher o formulário com os dados do apartamento
+        document.getElementById('nome_bloco').value = bloco ? bloco.nome : '';
+        document.getElementById('numero').value = apartamento.numero;
+        document.getElementById('vagas').value = apartamento.vagas;
+        document.getElementById('area').value = apartamento.area;
+        document.getElementById('quartos').value = apartamento.quartos || '';
+        document.getElementById('status').value = apartamento.status;
+        
+        // Mudar o texto do botão para indicar edição
+        document.getElementById('btnCadastrar').textContent = 'Atualizar Apartamento';
+        
+        // Remover o event listener antigo
+        formApartamento.removeEventListener('submit', adicionarApartamento);
+        
+        // Adicionar novo event listener para atualização
+        formApartamento.addEventListener('submit', async function atualizarHandler(e) {
+          e.preventDefault();
+          
+          const nomeBloco = document.getElementById('nome_bloco').value.trim();
+          const numero = document.getElementById('numero').value.trim();
+          const vagas = parseInt(document.getElementById('vagas').value);
+          const area = parseFloat(document.getElementById('area').value);
+          const quartos = document.getElementById('quartos').value ? parseInt(document.getElementById('quartos').value) : null;
+          const status = document.getElementById('status').value;
+          
+          try {
+            // Verificar se o bloco existe
+            const id_bloco = await encontrarBloco(nomeBloco);
+            
+            if (!id_bloco) {
+              showNotification('Bloco não encontrado! Cadastre o bloco primeiro.', 'error');
+              return;
+            }
+            
+            // Aqui você precisaria criar uma rota PUT no backend para atualização
+            const response = await fetch('/apartamentos', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id_bloco, numero, vagas, area, quartos, status })
+            });
+            
+            if (!response.ok) {
+              throw new Error('Erro ao atualizar apartamento');
+            }
+            
+            // Restaurar o formulário para cadastro normal
+            formApartamento.reset();
+            document.getElementById('btnCadastrar').textContent = 'Cadastrar Apartamento';
+            
+            // Remover este event listener e restaurar o original
+            formApartamento.removeEventListener('submit', atualizarHandler);
+            formApartamento.addEventListener('submit', adicionarApartamento);
+            
+            // Recarregar apartamentos
+            await carregarApartamentos();
+            
+            showNotification('Apartamento atualizado com sucesso!', 'success');
+          } catch (error) {
+            showNotification('Erro ao atualizar apartamento: ' + error.message, 'error');
+          }
+        });
+        
+        showNotification('Edite os dados e clique em Atualizar Apartamento', 'success');
+      }
+    }
+    
+    // Função para excluir um apartamento
+    async function excluirApartamento(id) {
+      if (confirm('Tem certeza que deseja excluir este apartamento?')) {
+        try {
+          // Em uma implementação real, você faria:
+          // await fetch(`/apartamentos/${id}`, { method: 'DELETE' });
+          
+          // Por enquanto, vamos apenas recarregar a lista (simulação)
+          showNotification('Funcionalidade de exclusão será implementada em breve', 'success');
+          
+          // Recarregar apartamentos
+          await carregarApartamentos();
+        } catch (error) {
+          showNotification('Erro ao excluir apartamento. Tente novamente.', 'error');
+          console.error('Erro:', error);
+        }
+      }
+    }
+    
+    // Event Listeners
+    formApartamento.addEventListener('submit', adicionarApartamento);
+    filtro.addEventListener('input', renderApartamentos);
+    
+    // Fechar modal ao clicar fora dele
+    window.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal')) {
+        e.target.style.display = 'none';
+      }
+    });
+    
+    // Inicializar a página
+    document.addEventListener('DOMContentLoaded', function() {
+      carregarBlocos();
+      carregarApartamentos();
+    });
+  </script>
+</body>
+</html>
